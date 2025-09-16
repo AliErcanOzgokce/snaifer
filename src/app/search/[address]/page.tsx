@@ -4,7 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Copy, ExternalLink, Share2, Download } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, Share2, Download, Loader2 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,40 +69,123 @@ interface LLMScore {
 
 export default function Component() {
   const [tokenAddress] = useState("27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4");
-  const [tokenName] = useState("Solana Token");
-  const [tokenSymbol] = useState("SOL");
+  const [tokenName] = useState("Bonk");
+  const [tokenSymbol] = useState("BONK");
   const [blockchain] = useState("Solana");
   const [tokenLogo] = useState(
-    "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1696504756"
+    "https://assets.coingecko.com/coins/images/28600/standard/bonk.jpg?1696527587"
   );
 
-  // Real API Response Mock Data
+  // Swap state management
+  const [fromAmount, setFromAmount] = useState("");
+  const [toAmount, setToAmount] = useState("");
+  const [isSwapping, setIsSwapping] = useState(false);
+  const [swapError, setSwapError] = useState("");
+  const [walletBalance, setWalletBalance] = useState({
+    SOL: 0.0,
+    BONK: 0.0,
+    USDC: 0.0
+  });
+
+  // Enhanced API Response Mock Data for Demo
   const apiResponse = {
     sessionId: "1344aa05-9b5b-4c58-9bab-c4bb7e919d6a",
     tokenId: "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4",
-    averageScore: 14,
+    averageScore: 72,
     scores: {
-      marketScore: 0,
-      securityScore: 20,
-      liquidityScore: 0,
-      communityScore: 0,
-      technicalScore: 50,
-      overallScore: 14
+      marketScore: 85,
+      securityScore: 78,
+      liquidityScore: 92,
+      communityScore: 88,
+      technicalScore: 65,
+      overallScore: 72
     },
     details: [
-      { tokenAiScoreDetailTypeId: 1, score: 0, passed: false },
+      { tokenAiScoreDetailTypeId: 1, score: 85, passed: true },
       { tokenAiScoreDetailTypeId: 2, score: 70, passed: true },
       { tokenAiScoreDetailTypeId: 3, score: 80, passed: true },
-      { tokenAiScoreDetailTypeId: 4, score: 0, passed: false },
-      { tokenAiScoreDetailTypeId: 5, score: 0, passed: false },
-      { tokenAiScoreDetailTypeId: 6, score: 0, passed: false },
-      { tokenAiScoreDetailTypeId: 7, score: 0, passed: false },
-      { tokenAiScoreDetailTypeId: 8, score: 0, passed: false },
-      { tokenAiScoreDetailTypeId: 9, score: 0, passed: false }
-    ]
+      { tokenAiScoreDetailTypeId: 4, score: 92, passed: true },
+      { tokenAiScoreDetailTypeId: 5, score: 88, passed: true },
+      { tokenAiScoreDetailTypeId: 6, score: 65, passed: true },
+      { tokenAiScoreDetailTypeId: 7, score: 78, passed: true },
+      { tokenAiScoreDetailTypeId: 8, score: 90, passed: true },
+      { tokenAiScoreDetailTypeId: 9, score: 75, passed: true }
+    ],
+    marketData: {
+      price: 0.00002345,
+      priceChange24h: 12.5,
+      volume24h: 24500000,
+      marketCap: 1560000000,
+      holders: 125000,
+      transactions24h: 45000
+    },
+    securityData: {
+      isVerified: true,
+      hasAudit: true,
+      auditScore: 78,
+      contractAge: 365,
+      liquidityLocked: true,
+      ownershipRenounced: true
+    },
+    communityData: {
+      twitterFollowers: 125000,
+      telegramMembers: 45000,
+      discordMembers: 32000,
+      githubStars: 850,
+      socialEngagement: 88,
+      developerActivity: 75
+    },
+    technicalData: {
+      contractComplexity: 65,
+      codeQuality: 70,
+      gasOptimization: 80,
+      upgradeability: false,
+      proxyContract: false,
+      openSource: true
+    }
   };
 
   const overallScore = apiResponse.averageScore;
+
+  // Swap functions
+  const handleFromAmountChange = (value: string) => {
+    setFromAmount(value);
+    if (value && !isNaN(Number(value))) {
+      const calculatedAmount = (Number(value) * 0.00002345).toFixed(6);
+      setToAmount(calculatedAmount);
+    } else {
+      setToAmount("");
+    }
+    setSwapError("");
+  };
+
+  const handleSwap = async () => {
+    if (!fromAmount || Number(fromAmount) <= 0) {
+      setSwapError("Geçerli bir miktar girin");
+      return;
+    }
+    
+    if (Number(fromAmount) > walletBalance.SOL) {
+      setSwapError("Yetersiz bakiye");
+      return;
+    }
+
+    setIsSwapping(true);
+    setSwapError("");
+    
+    // Simulate swap
+    setTimeout(() => {
+      setIsSwapping(false);
+      setFromAmount("");
+      setToAmount("");
+      // Update balances
+      setWalletBalance(prev => ({
+        ...prev,
+        SOL: prev.SOL - Number(fromAmount),
+        USDC: prev.USDC + Number(toAmount)
+      }));
+    }, 2000);
+  };
 
   // Category Data for Bars
   const categoryData = [
@@ -143,19 +226,19 @@ export default function Component() {
     }
   ];
 
-  // LLM Risk Scores
+  // Enhanced LLM Risk Scores for Demo
   const llmScores: LLMScore[] = [
     {
       name: "Gemini",
-      score: apiResponse.averageScore,
+      score: 75,
       logo: geminiLogo,
       color: "#4285F4",
-      comment: "Düşük risk skoru: Güvenlik açısından iyi ancak piyasa ve topluluk metrikleri zayıf.",
-      confidence: 85
+      comment: "Yüksek güvenlik skoru: Audit edilmiş kontrat ve güçlü topluluk desteği. Orta risk seviyesi.",
+      confidence: 92
     },
     {
       name: "Claude",
-      score: Math.max(0, apiResponse.averageScore - 5),
+      score: 70,
       logo: claudeLogo,
       color: "#7963FF",
       comment: "Teknik altyapı mevcut ancak likidite ve topluluk desteği eksik.",
@@ -163,27 +246,27 @@ export default function Component() {
     },
     {
       name: "GPT-4",
-      score: Math.max(0, apiResponse.averageScore - 3),
+      score: 68,
       logo: openaiLogo,
       color: "#10A37F",
-      comment: "Kod güvenliği orta seviyede, piyasa performansı düşük.",
-      confidence: 82
+      comment: "Güçlü teknik altyapı ve güvenlik önlemleri. Topluluk desteği gelişmekte.",
+      confidence: 85
     },
     {
       name: "Grok",
-      score: Math.max(0, apiResponse.averageScore - 8),
+      score: 80,
       logo: grokLogo,
       color: "#FF0000",
-      comment: "Yüksek risk: Piyasa ve topluluk metrikleri kritik seviyede.",
-      confidence: 91
+      comment: "Meme coin kategorisinde güçlü performans. Yüksek volatilite riski mevcut.",
+      confidence: 88
     },
     {
       name: "DeepSeek",
-      score: Math.max(0, apiResponse.averageScore - 2),
+      score: 72,
       logo: deepseekLogo,
       color: "#4A56E2",
-      comment: "Teknik skor yüksek ancak genel risk değerlendirmesi düşük.",
-      confidence: 76
+      comment: "Solana ekosisteminde popüler token. Likidite ve topluluk metrikleri güçlü.",
+      confidence: 90
     },
   ];
 
@@ -296,6 +379,11 @@ export default function Component() {
 
   return (
     <div className="min-h-screen bg-background relative">
+      {/* Raycast Animated Background */}
+      {/* <div className="fixed inset-0 z-0">
+        <RaycastBackground />
+      </div> */}
+      
       <Shell showGradient={true} className="mt-25">
         {/* Header */}
         <ShellHeader>
@@ -343,8 +431,8 @@ export default function Component() {
                   priority
                   unoptimized={tokenLogo.startsWith("http")}
                 />
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <h1 className="text-lg md:text-h2 text-foreground">{tokenName}</h1>
                     <div className="flex items-center space-x-2 mt-1">
                       <Badge className="bg-primary/10 text-primary border-primary/20">
@@ -354,28 +442,28 @@ export default function Component() {
                         Doğrulandı
                       </Badge>
                 </div>
-              </div>
                 </div>
-                
+              </div>
+
                 {/* Contract Address */}
                 <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-xl p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-muted-foreground mb-1">Kontrat Adresi</p>
                       <p className="text-sm font-mono text-foreground truncate">
-                        {tokenAddress}
-                      </p>
+                    {tokenAddress}
+                  </p>
                     </div>
                     <div className="flex items-center space-x-1 ml-3">
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50">
                         <Copy className="w-3 h-3" />
-                      </Button>
+                  </Button>
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50">
                         <ExternalLink className="w-3 h-3" />
-                      </Button>
+                  </Button>
                 </div>
-                </div>
-                </div>
+              </div>
+            </div>
               </div>
 
               {/* Center: Risk Score */}
@@ -518,32 +606,41 @@ export default function Component() {
                         
                         {/* Swap Interface */}
                         <div className="space-y-4">
-                          {/* From Token */}
-                          <div className="bg-accent/20 backdrop-blur-sm border border-border/20 rounded-xl p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm text-muted-foreground">Satıyorsun</span>
-                              <span className="text-xs text-muted-foreground">Bakiye: 1,250.45</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                                  <span className="text-xs font-bold text-primary">SOL</span>
-                                </div>
-                                <div>
-                                  <p className="font-semibold text-foreground">Solana</p>
-                                  <p className="text-xs text-muted-foreground">SOL</p>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <input 
-                                  type="number" 
-                                  placeholder="0.0" 
-                                  className="bg-transparent text-right text-xl font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none w-32"
-                                />
-                                <p className="text-xs text-muted-foreground">≈ $0.00</p>
-                              </div>
-                            </div>
-                          </div>
+                                      {/* From Token */}
+                                      <div className="bg-accent/20 backdrop-blur-sm border border-border/20 rounded-xl p-4">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <span className="text-sm text-muted-foreground">Satıyorsun</span>
+                                          <span className="text-xs text-muted-foreground">Bakiye: {walletBalance.SOL.toFixed(4)} SOL</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center space-x-3">
+                                            <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white/10">
+                          <Image 
+                                                src="https://assets.coingecko.com/coins/images/4128/standard/solana.png?1696504756"
+                                                alt="Solana logo"
+                            width={24}
+                            height={24}
+                                                className="object-contain"
+                                                unoptimized
+                          />
+                        </div>
+                                            <div>
+                                              <p className="font-semibold text-foreground">Solana</p>
+                                              <p className="text-xs text-muted-foreground">SOL</p>
+                      </div>
+                        </div>
+                                          <div className="text-right">
+                                            <input 
+                                              type="number" 
+                                              placeholder="0.0" 
+                                              value={fromAmount}
+                                              onChange={(e) => handleFromAmountChange(e.target.value)}
+                                              className="bg-transparent text-right text-xl font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none w-32"
+                                            />
+                                            <p className="text-xs text-muted-foreground">≈ ${(Number(fromAmount || 0) * 100).toFixed(2)}</p>
+                        </div>
+                                        </div>
+                                      </div>
                           
                           {/* Swap Arrow */}
                           <div className="flex justify-center">
@@ -556,7 +653,7 @@ export default function Component() {
                           <div className="bg-accent/20 backdrop-blur-sm border border-border/20 rounded-xl p-4">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm text-muted-foreground">Alıyorsun</span>
-                              <span className="text-xs text-muted-foreground">Bakiye: 0.00</span>
+                              <span className="text-xs text-muted-foreground">Bakiye: {walletBalance.USDC.toFixed(2)} USDC</span>
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
@@ -572,9 +669,11 @@ export default function Component() {
                                 <input 
                                   type="number" 
                                   placeholder="0.0" 
+                                  value={toAmount}
+                                  readOnly
                                   className="bg-transparent text-right text-xl font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none w-32"
                                 />
-                                <p className="text-xs text-muted-foreground">≈ $0.00</p>
+                                <p className="text-xs text-muted-foreground">≈ ${(Number(toAmount || 0)).toFixed(2)}</p>
                               </div>
                             </div>
                           </div>
@@ -594,9 +693,30 @@ export default function Component() {
                           </p>
                         </div>
                         
+                        {/* Error Message */}
+                        {swapError && (
+                          <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <XCircle className="w-4 h-4 text-destructive" />
+                              <span className="text-sm text-destructive">{swapError}</span>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Swap Button */}
-                        <Button className="w-full mt-4 h-12 bg-primary hover:bg-primary-hover text-primary-foreground font-semibold rounded-xl">
-                          Swap Yap
+                        <Button 
+                          onClick={handleSwap}
+                          disabled={isSwapping || !fromAmount || Number(fromAmount) <= 0}
+                          className="w-full mt-4 h-12 bg-primary hover:bg-primary-hover text-primary-foreground font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isSwapping ? (
+                            <div className="flex items-center space-x-2">
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span>Swapping...</span>
+                            </div>
+                          ) : (
+                            "Swap Yap"
+                          )}
                         </Button>
                       </div>
                       
@@ -605,42 +725,45 @@ export default function Component() {
                         <h4 className="text-lg font-semibold text-foreground mb-4">DEX Karşılaştırması</h4>
                         <div className="space-y-3">
                           {[
-                            { name: "Jupiter", price: "1.2345", slippage: "0.1%", liquidity: "High" },
-                            { name: "Raydium", price: "1.2342", slippage: "0.2%", liquidity: "Medium" },
-                            { name: "Orca", price: "1.2340", slippage: "0.3%", liquidity: "High" },
-                            { name: "Serum", price: "1.2338", slippage: "0.4%", liquidity: "Low" }
+                            { name: "Jupiter", price: "0.00002345", slippage: "0.1%", liquidity: "High", volume: "$2.4M", isBest: true },
+                            { name: "Raydium", price: "0.00002342", slippage: "0.2%", liquidity: "Medium", volume: "$1.8M", isBest: false },
+                            { name: "Orca", price: "0.00002340", slippage: "0.3%", liquidity: "High", volume: "$1.2M", isBest: false },
+                            { name: "Serum", price: "0.00002338", slippage: "0.4%", liquidity: "Low", volume: "$800K", isBest: false }
                           ].map((dex, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-glass/30 rounded-lg hover:bg-glass/50 transition-colors">
+                            <div key={index} className={`flex items-center justify-between p-3 rounded-lg hover:bg-glass/50 transition-colors ${dex.isBest ? 'bg-success/10 border border-success/20' : 'bg-glass/30'}`}>
                               <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-full bg-accent/50 flex items-center justify-center">
-                                  <span className="text-xs font-bold text-foreground">{dex.name[0]}</span>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${dex.isBest ? 'bg-success/20' : 'bg-accent/50'}`}>
+                                  <span className={`text-xs font-bold ${dex.isBest ? 'text-success' : 'text-foreground'}`}>{dex.name[0]}</span>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-foreground">{dex.name}</p>
-                                  <p className="text-xs text-muted-foreground">Likidite: {dex.liquidity}</p>
+                                  <div className="flex items-center space-x-2">
+                                    <p className="font-medium text-foreground">{dex.name}</p>
+                                    {dex.isBest && <Badge className="bg-success/10 text-success border-success/20 text-xs">En İyi</Badge>}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">Likidite: {dex.liquidity} • Hacim: {dex.volume}</p>
                                 </div>
                               </div>
                               <div className="text-right">
                                 <p className="font-semibold text-foreground">{dex.price}</p>
                                 <p className="text-xs text-muted-foreground">{dex.slippage} slippage</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  ))}
+                        </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
               </TabsContent>
 
               <TabsContent value="market" className="mt-6">
                 <Card className="bg-glass/90 backdrop-blur-md border border-border/30 shadow-lg shadow-black/20">
-                  <CardHeader>
+            <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
                       <BarChart3 className="w-5 h-5 text-primary" />
                       <span>Piyasa Analizi</span>
-                    </CardTitle>
-                  </CardHeader>
+              </CardTitle>
+            </CardHeader>
                   <CardContent className="p-6">
                     <div className="space-y-6">
                       {/* Price Chart */}
@@ -657,9 +780,11 @@ export default function Component() {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-muted-foreground">24s Değişim</p>
-                              <p className="text-2xl font-bold text-destructive">-12.5%</p>
+                              <p className={`text-2xl font-bold ${apiResponse.marketData.priceChange24h >= 0 ? 'text-success' : 'text-destructive'}`}>
+                                {apiResponse.marketData.priceChange24h >= 0 ? '+' : ''}{apiResponse.marketData.priceChange24h}%
+                              </p>
                             </div>
-                            <TrendingUp className="w-8 h-8 text-destructive" />
+                            <TrendingUp className={`w-8 h-8 ${apiResponse.marketData.priceChange24h >= 0 ? 'text-success' : 'text-destructive'}`} />
                           </div>
                         </div>
                         
@@ -667,7 +792,7 @@ export default function Component() {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-muted-foreground">24s Hacim</p>
-                              <p className="text-2xl font-bold text-foreground">$2.4M</p>
+                              <p className="text-2xl font-bold text-foreground">${(apiResponse.marketData.volume24h / 1000000).toFixed(1)}M</p>
                             </div>
                             <BarChart3 className="w-8 h-8 text-primary" />
                           </div>
@@ -677,10 +802,158 @@ export default function Component() {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-muted-foreground">Market Cap</p>
-                              <p className="text-2xl font-bold text-foreground">$45.2M</p>
+                              <p className="text-2xl font-bold text-foreground">${(apiResponse.marketData.marketCap / 1000000).toFixed(1)}M</p>
                             </div>
                             <Activity className="w-8 h-8 text-success" />
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Additional Market Data */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-muted-foreground">Token Holders</p>
+                              <p className="text-2xl font-bold text-foreground">{apiResponse.marketData.holders.toLocaleString()}</p>
+                            </div>
+                            <Users className="w-8 h-8 text-primary" />
+                          </div>
+                        </div>
+                        
+                        <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-muted-foreground">24s İşlemler</p>
+                              <p className="text-2xl font-bold text-foreground">{apiResponse.marketData.transactions24h.toLocaleString()}</p>
+                            </div>
+                            <Activity className="w-8 h-8 text-success" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+            </CardContent>
+          </Card>
+              </TabsContent>
+
+              <TabsContent value="community" className="mt-6">
+                <Card className="bg-glass/90 backdrop-blur-md border border-border/30 shadow-lg shadow-black/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Users className="w-5 h-5 text-primary" />
+                      <span>Topluluk Analizi</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="space-y-6">
+                      {/* Social Media Stats */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Sosyal Medya Metrikleri</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Twitter Takipçileri</p>
+                                <p className="text-2xl font-bold text-foreground">{apiResponse.communityData.twitterFollowers.toLocaleString()}</p>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                <span className="text-blue-500 text-sm">🐦</span>
+                              </div>
+                            </div>
+        </div>
+
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Telegram Üyeleri</p>
+                                <p className="text-2xl font-bold text-foreground">{apiResponse.communityData.telegramMembers.toLocaleString()}</p>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-blue-600/20 flex items-center justify-center">
+                                <span className="text-blue-600 text-sm">📱</span>
+                              </div>
+                            </div>
+          </div>
+
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Discord Üyeleri</p>
+                                <p className="text-2xl font-bold text-foreground">{apiResponse.communityData.discordMembers.toLocaleString()}</p>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                                <span className="text-purple-500 text-sm">💬</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Engagement Metrics */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Etkileşim Metrikleri</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Sosyal Etkileşim</p>
+                                <p className="text-2xl font-bold text-success">{apiResponse.communityData.socialEngagement}%</p>
+                                <p className="text-xs text-muted-foreground">Yüksek aktivite</p>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center">
+                                <span className="text-success text-sm">📈</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Geliştirici Aktivitesi</p>
+                                <p className="text-2xl font-bold text-warning">{apiResponse.communityData.developerActivity}%</p>
+                                <p className="text-xs text-muted-foreground">Orta seviye</p>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-warning/20 flex items-center justify-center">
+                                <span className="text-warning text-sm">👨‍💻</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* GitHub Activity */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">GitHub Aktivitesi</h4>
+                        <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-muted-foreground">GitHub Stars</p>
+                              <p className="text-2xl font-bold text-foreground">{apiResponse.communityData.githubStars.toLocaleString()}</p>
+                              <p className="text-xs text-muted-foreground">Açık kaynak proje</p>
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center">
+                              <span className="text-gray-500 text-sm">⭐</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Community Health Score */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Topluluk Sağlık Skoru</h4>
+                        <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm text-muted-foreground">Genel Topluluk Skoru</span>
+                            <span className="text-2xl font-bold text-success">{apiResponse.scores.communityScore}/100</span>
+                          </div>
+                          <div className="w-full bg-accent/30 rounded-full h-3 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-success to-success/80"
+                              style={{ width: `${apiResponse.scores.communityScore}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Güçlü topluluk desteği ve aktif sosyal medya varlığı
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -688,21 +961,185 @@ export default function Component() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="community" className="mt-6">
-                <Card className="bg-glass/90 backdrop-blur-md border border-border/30 shadow-lg shadow-black/20">
-                  <CardContent className="p-6">
-                    <p className="text-muted-foreground">Topluluk analizi içeriği burada olacak...</p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
               <TabsContent value="technical" className="mt-6">
                 <Card className="bg-glass/90 backdrop-blur-md border border-border/30 shadow-lg shadow-black/20">
+            <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Code className="w-5 h-5 text-primary" />
+                      <span>Teknik Analiz</span>
+              </CardTitle>
+            </CardHeader>
                   <CardContent className="p-6">
-                    <p className="text-muted-foreground">Teknik analiz içeriği burada olacak...</p>
+                    <div className="space-y-6">
+                      {/* Contract Analysis */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Kontrat Analizi</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Kontrat Karmaşıklığı</p>
+                                <p className="text-2xl font-bold text-warning">{apiResponse.technicalData.contractComplexity}/100</p>
+                                <p className="text-xs text-muted-foreground">Orta seviye</p>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-warning/20 flex items-center justify-center">
+                                <span className="text-warning text-sm">⚙️</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Kod Kalitesi</p>
+                                <p className="text-2xl font-bold text-success">{apiResponse.technicalData.codeQuality}/100</p>
+                                <p className="text-xs text-muted-foreground">İyi</p>
+                  </div>
+                              <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center">
+                                <span className="text-success text-sm">💎</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Security Features */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Güvenlik Özellikleri</h4>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-glass/30 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center">
+                                <CheckCircle className="w-4 h-4 text-success" />
+                  </div>
+                              <span className="text-sm font-medium text-foreground">Kontrat Doğrulandı</span>
+                            </div>
+                            <Badge className="bg-success/10 text-success border-success/20">✓</Badge>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 bg-glass/30 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center">
+                                <CheckCircle className="w-4 h-4 text-success" />
+                              </div>
+                              <span className="text-sm font-medium text-foreground">Audit Edildi</span>
+                            </div>
+                            <Badge className="bg-success/10 text-success border-success/20">Skor: {apiResponse.securityData.auditScore}</Badge>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 bg-glass/30 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center">
+                                <CheckCircle className="w-4 h-4 text-success" />
+                              </div>
+                              <span className="text-sm font-medium text-foreground">Likidite Kilitli</span>
+                            </div>
+                            <Badge className="bg-success/10 text-success border-success/20">✓</Badge>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 bg-glass/30 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center">
+                                <CheckCircle className="w-4 h-4 text-success" />
+                              </div>
+                              <span className="text-sm font-medium text-foreground">Sahiplik Devredildi</span>
+                            </div>
+                            <Badge className="bg-success/10 text-success border-success/20">✓</Badge>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Technical Metrics */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Teknik Metrikler</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Gas Optimizasyonu</p>
+                                <p className="text-2xl font-bold text-success">{apiResponse.technicalData.gasOptimization}/100</p>
+                                <p className="text-xs text-muted-foreground">İyi optimize</p>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center">
+                                <span className="text-success text-sm">⚡</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Kontrat Yaşı</p>
+                                <p className="text-2xl font-bold text-primary">{apiResponse.securityData.contractAge} gün</p>
+                                <p className="text-xs text-muted-foreground">Olgun proje</p>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                <span className="text-primary text-sm">📅</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Contract Type */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Kontrat Türü</h4>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-glass/30 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center">
+                                <XCircle className="w-4 h-4 text-warning" />
+                              </div>
+                              <span className="text-sm font-medium text-foreground">Proxy Kontrat</span>
+                            </div>
+                            <Badge className="bg-warning/10 text-warning border-warning/20">Hayır</Badge>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 bg-glass/30 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center">
+                                <XCircle className="w-4 h-4 text-warning" />
+                              </div>
+                              <span className="text-sm font-medium text-foreground">Güncellenebilir</span>
+                            </div>
+                            <Badge className="bg-warning/10 text-warning border-warning/20">Hayır</Badge>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 bg-glass/30 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center">
+                                <CheckCircle className="w-4 h-4 text-success" />
+                              </div>
+                              <span className="text-sm font-medium text-foreground">Açık Kaynak</span>
+                            </div>
+                            <Badge className="bg-success/10 text-success border-success/20">Evet</Badge>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Overall Technical Score */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Genel Teknik Skor</h4>
+                        <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm text-muted-foreground">Teknik Değerlendirme</span>
+                            <span className="text-2xl font-bold text-warning">{apiResponse.scores.technicalScore}/100</span>
+                          </div>
+                          <div className="w-full bg-accent/30 rounded-full h-3 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-warning to-warning/80"
+                              style={{ width: `${apiResponse.scores.technicalScore}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Güvenli kontrat yapısı, iyi kod kalitesi ve güçlü güvenlik önlemleri
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
+                </TabsContent>
             </Tabs>
 
             {/* AI Analysis Section */}
@@ -727,10 +1164,10 @@ export default function Component() {
                             height={20}
                           />
                         </div>
-                        <div className="flex-1">
+                    <div className="flex-1">
                           <h4 className="text-sm font-semibold text-foreground">{llm.name}</h4>
                           <p className="text-xs text-muted-foreground">Güven: %{llm.confidence}</p>
-                      </div>
+                    </div>
                         <span className={`text-lg font-bold ${getScoreColor(llm.score)}`}>
                             {llm.score}
                           </span>
@@ -749,9 +1186,9 @@ export default function Component() {
                       <p className="text-xs text-muted-foreground leading-relaxed">
                         {llm.comment}
                       </p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-              </div>
             </CardContent>
           </Card>
 

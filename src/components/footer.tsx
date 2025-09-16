@@ -2,27 +2,27 @@ import Link from "next/link";
 
 const links = [
   {
-    title: "Features",
+    title: "Token Scanner",
+    href: "/",
+  },
+  {
+    title: "Risk Analysis",
     href: "#",
   },
   {
-    title: "Solution",
+    title: "Security Audit",
     href: "#",
   },
   {
-    title: "Customers",
+    title: "API Docs",
     href: "#",
   },
   {
-    title: "Pricing",
+    title: "Support",
     href: "#",
   },
   {
-    title: "Help",
-    href: "#",
-  },
-  {
-    title: "About",
+    title: "Blog",
     href: "#",
   },
 ];
@@ -33,7 +33,7 @@ export default function FooterSection() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex flex-wrap justify-between gap-6">
           <span className="text-muted-foreground order-last block text-center text-sm md:order-first">
-            © {new Date().getFullYear()} Tailark, All rights reserved
+            © {new Date().getFullYear()} Snaife, All rights reserved
           </span>
           <div className="order-first flex flex-wrap justify-center gap-6 text-sm md:order-last">
             {links.map((link, index) => (

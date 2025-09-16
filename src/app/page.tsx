@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 // keep Popover for small inline menus; modal uses Dialog
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
 import { Check, ChevronDown, Loader2, Search } from "lucide-react";
+import { WebGLShader } from "@/components/ui/web-gl-shader";
 
 export default function Home() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -57,18 +59,84 @@ export default function Home() {
   const [selectedNetwork, setSelectedNetwork] = useState({
     name: "Solana",
     symbol: "SOL",
-    color: "bg-green-500",
+    logo: "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1696504756",
+    price: "98.45",
+    change: 2.34,
   });
 
+  const [networkSearchTerm, setNetworkSearchTerm] = useState("");
+
   const networks = [
-    { name: "Solana", symbol: "SOL", color: "bg-green-500", price: "98.45", change: 2.34 },
-    { name: "Ethereum", symbol: "ETH", color: "bg-blue-500", price: "3,245.67", change: -1.23 },
-    { name: "Binance Smart Chain", symbol: "BSC", color: "bg-yellow-500", price: "312.89", change: 0.87 },
-    { name: "Polygon", symbol: "MATIC", color: "bg-purple-500", price: "0.89", change: 3.45 },
-    { name: "Avalanche", symbol: "AVAX", color: "bg-red-500", price: "28.76", change: -0.56 },
-    { name: "Arbitrum", symbol: "ARB", color: "bg-blue-600", price: "1.23", change: 1.78 },
-    { name: "Optimism", symbol: "OP", color: "bg-red-600", price: "2.45", change: -2.12 },
+    { 
+      name: "Solana", 
+      symbol: "SOL", 
+      logo: "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1696504756",
+      price: "98.45", 
+      change: 2.34 
+    },
+    { 
+      name: "Ethereum", 
+      symbol: "ETH", 
+      logo: "https://assets.coingecko.com/coins/images/279/standard/ethereum.png?1696501628",
+      price: "3,245.67", 
+      change: -1.23 
+    },
+    { 
+      name: "Binance Smart Chain", 
+      symbol: "BSC", 
+      logo: "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970",
+      price: "312.89", 
+      change: 0.87 
+    },
+    { 
+      name: "Polygon", 
+      symbol: "MATIC", 
+      logo: "https://assets.coingecko.com/coins/images/4713/standard/matic-token-icon.png?1696503757",
+      price: "0.89", 
+      change: 3.45 
+    },
+    { 
+      name: "Avalanche", 
+      symbol: "AVAX", 
+      logo: "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369",
+      price: "28.76", 
+      change: -0.56 
+    },
+    { 
+      name: "Arbitrum", 
+      symbol: "ARB", 
+      logo: "https://assets.coingecko.com/coins/images/16547/standard/photo_2023-03-29_21.47.00.jpeg?1696516109",
+      price: "1.23", 
+      change: 1.78 
+    },
+    { 
+      name: "Optimism", 
+      symbol: "OP", 
+      logo: "https://assets.coingecko.com/coins/images/25244/standard/Optimism.png?1696524385",
+      price: "2.45", 
+      change: -2.12 
+    },
+    { 
+      name: "Base", 
+      symbol: "BASE", 
+      logo: "https://assets.coingecko.com/markets/images/23/large/Coinbase_Coin_Primary.png?1706864258",
+      price: "0.45", 
+      change: 1.23 
+    },
+    { 
+      name: "Sui", 
+      symbol: "SUI", 
+      logo: "https://assets.coingecko.com/coins/images/26375/standard/sui_asset.jpeg?1696525453",
+      price: "1.89", 
+      change: 4.56 
+    },
   ];
+
+  // Filter networks based on search term
+  const filteredNetworks = networks.filter(network =>
+    network.name.toLowerCase().includes(networkSearchTerm.toLowerCase()) ||
+    network.symbol.toLowerCase().includes(networkSearchTerm.toLowerCase())
+  );
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -97,6 +165,9 @@ export default function Home() {
         </div>
       </div>
 
+      {/* WebGL Shader Background */}
+      <WebGLShader />
+      
       {/* Main Content */}
       <div className={`relative z-10 flex flex-col items-center h-screen justify-center space-y-10 text-center px-4 overflow-hidden transition-all duration-1000 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         {/* Hero Text */}
@@ -136,10 +207,15 @@ export default function Home() {
                 type="button"
                 onClick={() => setIsNetworkOpen(true)}
                 className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center space-x-2 px-3 py-1.5 rounded-full bg-glass backdrop-blur-sm border border-border/20 hover:border-border/40 transition-all duration-200 z-10">
-                <div className={`w-3 h-3 rounded-full ${selectedNetwork.color} flex items-center justify-center`}>
-                  <span className="text-white text-xs font-bold">
-                    {selectedNetwork.symbol.charAt(0)}
-                  </span>
+                <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center bg-white/10">
+                  <Image 
+                    src={selectedNetwork.logo} 
+                    alt={`${selectedNetwork.name} logo`}
+                    width={12}
+                    height={12}
+                    className="object-contain"
+                    unoptimized
+                  />
                 </div>
                 <span className="text-sm font-medium text-foreground">{selectedNetwork.symbol}</span>
                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
@@ -209,6 +285,8 @@ export default function Home() {
               <div className="relative rounded-full bg-glass backdrop-blur-sm border border-border/20 transition-all duration-300 hover:border-border/40 focus-within:shadow-lg focus-within:shadow-primary/20 focus-within:border-border/40">
                 <input 
                   placeholder="Search network…" 
+                  value={networkSearchTerm}
+                  onChange={(e) => setNetworkSearchTerm(e.target.value)}
                   className="w-full h-10 rounded-full bg-transparent border-0 ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 outline-none focus:outline-none focus-visible:outline-none appearance-none text-foreground placeholder:text-muted-foreground/70 transition-all duration-300 px-4 text-sm" 
                 />
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
@@ -217,47 +295,61 @@ export default function Home() {
 
             {/* Network List */}
             <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-2">
-              {networks.map((network) => (
-                <button
-                  key={network.symbol}
-                  type="button"
-                  onClick={() => {
-                    setSelectedNetwork(network);
-                    // Smooth close with delay
-                    setTimeout(() => {
-                      setIsNetworkOpen(false);
-                    }, 150);
-                  }}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-glass/50 backdrop-blur-sm border border-border/10 hover:bg-glass hover:border-border/30 transition-all duration-300 hover:scale-[1.02] group"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full ${network.color} flex items-center justify-center shadow-lg`}>
-                      <span className="text-white text-sm font-bold">
-                        {network.symbol.charAt(0)}
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium text-[15px] text-foreground group-hover:text-primary transition-colors duration-300">
-                        {network.name}
+              {filteredNetworks.length > 0 ? (
+                filteredNetworks.map((network) => (
+                  <button
+                    key={network.symbol}
+                    type="button"
+                    onClick={() => {
+                      setSelectedNetwork(network);
+                      setNetworkSearchTerm(""); // Clear search after selection
+                      // Smooth close with delay
+                      setTimeout(() => {
+                        setIsNetworkOpen(false);
+                      }, 150);
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-glass/50 backdrop-blur-sm border border-border/10 hover:bg-glass hover:border-border/30 transition-all duration-300 hover:scale-[1.02] group"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shadow-lg bg-white/10">
+                        <Image 
+                          src={network.logo} 
+                          alt={`${network.name} logo`}
+                          width={24}
+                          height={24}
+                          className="object-contain"
+                          unoptimized
+                        />
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {network.symbol}
+                      <div className="text-left">
+                        <div className="font-medium text-[15px] text-foreground group-hover:text-primary transition-colors duration-300">
+                          {network.name}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {network.symbol}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-semibold text-foreground tabular-nums">
-                      ${network.price}
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-foreground tabular-nums">
+                        ${network.price}
+                      </div>
+                      <div className={`text-xs ${network.change >= 0 ? 'text-success' : 'text-destructive'}`}>
+                        {network.change >= 0 ? '+' : ''}{network.change}%
+                      </div>
                     </div>
-                    <div className={`text-xs ${network.change >= 0 ? 'text-success' : 'text-destructive'}`}>
-                      {network.change >= 0 ? '+' : ''}{network.change}%
-                    </div>
+                    {selectedNetwork.symbol === network.symbol && (
+                      <Check aria-hidden className="h-4 w-4 text-primary ml-2 animate-in fade-in duration-300" />
+                    )}
+                  </button>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-muted-foreground text-sm">
+                    No networks found for &quot;{networkSearchTerm}&quot;
                   </div>
-                  {selectedNetwork.symbol === network.symbol && (
-                    <Check aria-hidden className="h-4 w-4 text-primary ml-2 animate-in fade-in duration-300" />
-                  )}
-                </button>
-              ))}
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
