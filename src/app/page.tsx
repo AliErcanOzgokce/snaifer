@@ -56,12 +56,12 @@ export default function Home() {
     }
   }, [isNetworkOpen]);
 
-  const [selectedNetwork, setSelectedNetwork] = useState({
-    name: "Solana",
-    symbol: "SOL",
+  const [selectedNetwork, setSelectedNetwork] = useState({ 
+    name: "Solana", 
+    symbol: "SOL", 
     logo: "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1696504756",
-    price: "98.45",
-    change: 2.34,
+    price: "238.51", 
+    change: 1.89
   });
 
   const [networkSearchTerm, setNetworkSearchTerm] = useState("");
@@ -71,66 +71,68 @@ export default function Home() {
       name: "Solana", 
       symbol: "SOL", 
       logo: "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1696504756",
-      price: "98.45", 
-      change: 2.34 
+      price: "238.51", 
+      change: 1.89
     },
     { 
       name: "Ethereum", 
       symbol: "ETH", 
       logo: "https://assets.coingecko.com/coins/images/279/standard/ethereum.png?1696501628",
-      price: "3,245.67", 
-      change: -1.23 
+      price: "4,496.33", 
+      change: -0.34
     },
     { 
       name: "Binance Smart Chain", 
       symbol: "BSC", 
       logo: "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970",
-      price: "312.89", 
-      change: 0.87 
+      price: "955.95", 
+      change: 3.78
     },
     { 
       name: "Polygon", 
       symbol: "MATIC", 
       logo: "https://assets.coingecko.com/coins/images/4713/standard/matic-token-icon.png?1696503757",
-      price: "0.89", 
-      change: 3.45 
+      price: "0.26", 
+      change: 1.27
     },
     { 
       name: "Avalanche", 
       symbol: "AVAX", 
       logo: "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369",
-      price: "28.76", 
-      change: -0.56 
+      price: "30.03", 
+      change: 0.47
     },
     { 
       name: "Arbitrum", 
       symbol: "ARB", 
       logo: "https://assets.coingecko.com/coins/images/16547/standard/photo_2023-03-29_21.47.00.jpeg?1696516109",
-      price: "1.23", 
-      change: 1.78 
+      price: "0.50", 
+      change: 0.96
     },
     { 
       name: "Optimism", 
       symbol: "OP", 
       logo: "https://assets.coingecko.com/coins/images/25244/standard/Optimism.png?1696524385",
-      price: "2.45", 
-      change: -2.12 
+      price: "0.78", 
+      change: 4.30
     },
     { 
       name: "Base", 
       symbol: "BASE", 
       logo: "https://assets.coingecko.com/markets/images/23/large/Coinbase_Coin_Primary.png?1706864258",
-      price: "0.45", 
-      change: 1.23 
+      // Base zincirinin yerel token'ı yok; gaz ETH. Bu nedenle ETH fiyatını yansıtıyorum.
+      price: "4,496.33", 
+      change: -0.34
     },
     { 
       name: "Sui", 
       symbol: "SUI", 
       logo: "https://assets.coingecko.com/coins/images/26375/standard/sui_asset.jpeg?1696525453",
-      price: "1.89", 
-      change: 4.56 
+      price: "3.64", 
+      change: 3.57
     },
   ];
+  
 
   // Filter networks based on search term
   const filteredNetworks = networks.filter(network =>
