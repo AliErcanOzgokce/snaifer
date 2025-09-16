@@ -68,7 +68,7 @@ interface LLMScore {
 }
 
 export default function Component() {
-  const [tokenAddress] = useState("27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4");
+  const [tokenAddress] = useState("DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263");
   const [tokenName] = useState("Bonk");
   const [tokenSymbol] = useState("BONK");
   const [blockchain] = useState("Solana");
@@ -82,7 +82,7 @@ export default function Component() {
   const [isSwapping, setIsSwapping] = useState(false);
   const [swapError, setSwapError] = useState("");
   const [walletBalance, setWalletBalance] = useState({
-    SOL: 0.0,
+    SOL: 2.5,
     BONK: 0.0,
     USDC: 0.0
   });
@@ -90,7 +90,7 @@ export default function Component() {
   // Enhanced API Response Mock Data for Demo
   const apiResponse = {
     sessionId: "1344aa05-9b5b-4c58-9bab-c4bb7e919d6a",
-    tokenId: "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4",
+    tokenId: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
     averageScore: 72,
     scores: {
       marketScore: 85,
@@ -151,7 +151,8 @@ export default function Component() {
   const handleFromAmountChange = (value: string) => {
     setFromAmount(value);
     if (value && !isNaN(Number(value))) {
-      const calculatedAmount = (Number(value) * 0.00002345).toFixed(6);
+      // SOL to BONK conversion rate (1 SOL = ~42,553 BONK)
+      const calculatedAmount = (Number(value) * 42553).toFixed(0);
       setToAmount(calculatedAmount);
     } else {
       setToAmount("");
@@ -182,7 +183,7 @@ export default function Component() {
       setWalletBalance(prev => ({
         ...prev,
         SOL: prev.SOL - Number(fromAmount),
-        USDC: prev.USDC + Number(toAmount)
+        BONK: prev.BONK + Number(toAmount)
       }));
     }, 2000);
   };
@@ -389,15 +390,17 @@ export default function Component() {
         <ShellHeader>
             <div className="flex items-center justify-between">
             {/* Breadcrumb */}
-            <div className="flex items-center space-x-2">
-              <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-300 group">
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <Link href="/" className="inline-flex items-center gap-1 sm:gap-2 text-muted-foreground hover:text-foreground transition-colors duration-300 group">
                 <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-300" />
-                <span>Ana Sayfa</span>
+                <span className="hidden sm:inline">Ana Sayfa</span>
+                <span className="sm:hidden">Ana</span>
               </Link>
               <span className="text-muted-foreground">/</span>
-              <span className="text-muted-foreground">Tarama</span>
+              <span className="text-muted-foreground hidden sm:inline">Tarama</span>
+              <span className="text-muted-foreground sm:hidden">Scan</span>
               <span className="text-muted-foreground">/</span>
-              <span className="text-foreground font-medium">{tokenSymbol}</span>
+              <span className="text-foreground font-medium truncate max-w-[100px] sm:max-w-none">{tokenSymbol}</span>
             </div>
             
             {/* Actions */}
@@ -455,13 +458,28 @@ export default function Component() {
                   </p>
                     </div>
                     <div className="flex items-center space-x-1 ml-3">
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0 hover:bg-accent/50"
+                        onClick={() => {
+                          navigator.clipboard.writeText(tokenAddress);
+                          // Toast notification could be added here
+                        }}
+                      >
                         <Copy className="w-3 h-3" />
-                  </Button>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50">
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0 hover:bg-accent/50"
+                        onClick={() => {
+                          window.open(`https://solscan.io/token/${tokenAddress}`, '_blank');
+                        }}
+                      >
                         <ExternalLink className="w-3 h-3" />
-                  </Button>
-                </div>
+                      </Button>
+                    </div>
               </div>
             </div>
               </div>
@@ -620,7 +638,7 @@ export default function Component() {
                                                 alt="Solana logo"
                             width={24}
                             height={24}
-                                                className="object-contain"
+                            className="object-contain"
                                                 unoptimized
                           />
                         </div>
@@ -653,18 +671,25 @@ export default function Component() {
                           <div className="bg-accent/20 backdrop-blur-sm border border-border/20 rounded-xl p-4">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm text-muted-foreground">Alıyorsun</span>
-                              <span className="text-xs text-muted-foreground">Bakiye: {walletBalance.USDC.toFixed(2)} USDC</span>
+                              <span className="text-xs text-muted-foreground">Bakiye: {walletBalance.BONK.toFixed(0)} BONK</span>
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-full bg-warning/20 flex items-center justify-center">
-                                  <span className="text-xs font-bold text-warning">USDC</span>
-                                </div>
+                                <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white/10">
+                                  <Image 
+                                    src="https://assets.coingecko.com/coins/images/28600/standard/bonk.jpg?1696527587"
+                                    alt="Bonk logo"
+                            width={24}
+                            height={24}
+                                    className="object-contain"
+                                    unoptimized
+                          />
+                        </div>
                                 <div>
-                                  <p className="font-semibold text-foreground">USD Coin</p>
-                                  <p className="text-xs text-muted-foreground">USDC</p>
-                                </div>
-                              </div>
+                                  <p className="font-semibold text-foreground">Bonk</p>
+                                  <p className="text-xs text-muted-foreground">BONK</p>
+                      </div>
+                        </div>
                               <div className="text-right">
                                 <input 
                                   type="number" 
@@ -673,8 +698,8 @@ export default function Component() {
                                   readOnly
                                   className="bg-transparent text-right text-xl font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none w-32"
                                 />
-                                <p className="text-xs text-muted-foreground">≈ ${(Number(toAmount || 0)).toFixed(2)}</p>
-                              </div>
+                                <p className="text-xs text-muted-foreground">≈ ${(Number(toAmount || 0) * 0.00002345).toFixed(6)}</p>
+                        </div>
                             </div>
                           </div>
                         </div>
@@ -689,7 +714,7 @@ export default function Component() {
                             <span className="text-sm text-success font-semibold">%0.25 slippage</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Jupiter → Raydium → Orca (3 adım)
+                            SOL → BONK (1 SOL = 42,553 BONK)
                           </p>
                         </div>
                         
@@ -725,10 +750,10 @@ export default function Component() {
                         <h4 className="text-lg font-semibold text-foreground mb-4">DEX Karşılaştırması</h4>
                         <div className="space-y-3">
                           {[
-                            { name: "Jupiter", price: "0.00002345", slippage: "0.1%", liquidity: "High", volume: "$2.4M", isBest: true },
-                            { name: "Raydium", price: "0.00002342", slippage: "0.2%", liquidity: "Medium", volume: "$1.8M", isBest: false },
-                            { name: "Orca", price: "0.00002340", slippage: "0.3%", liquidity: "High", volume: "$1.2M", isBest: false },
-                            { name: "Serum", price: "0.00002338", slippage: "0.4%", liquidity: "Low", volume: "$800K", isBest: false }
+                            { name: "Jupiter", price: "42,553", slippage: "0.1%", liquidity: "High", volume: "$2.4M", isBest: true },
+                            { name: "Raydium", price: "42,450", slippage: "0.2%", liquidity: "Medium", volume: "$1.8M", isBest: false },
+                            { name: "Orca", price: "42,380", slippage: "0.3%", liquidity: "High", volume: "$1.2M", isBest: false },
+                            { name: "Serum", price: "42,200", slippage: "0.4%", liquidity: "Low", volume: "$800K", isBest: false }
                           ].map((dex, index) => (
                             <div key={index} className={`flex items-center justify-between p-3 rounded-lg hover:bg-glass/50 transition-colors ${dex.isBest ? 'bg-success/10 border border-success/20' : 'bg-glass/30'}`}>
                               <div className="flex items-center space-x-3">
@@ -744,7 +769,7 @@ export default function Component() {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <p className="font-semibold text-foreground">{dex.price}</p>
+                                <p className="font-semibold text-foreground">{dex.price} BONK</p>
                                 <p className="text-xs text-muted-foreground">{dex.slippage} slippage</p>
                       </div>
                     </div>
@@ -770,7 +795,7 @@ export default function Component() {
                       <div>
                         <h4 className="text-lg font-semibold text-foreground mb-4">Fiyat Grafiği</h4>
                         <div className="h-96 rounded-lg overflow-hidden bg-accent/10 border border-border/20">
-                          <TradingViewChart symbol="BITSTAMP:ETHUSD" />
+                          <TradingViewChart symbol="BINANCE:BONKUSDT" />
                         </div>
                       </div>
                       

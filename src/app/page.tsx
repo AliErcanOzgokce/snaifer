@@ -169,7 +169,7 @@ export default function Home() {
       <WebGLShader />
       
       {/* Main Content */}
-      <div className={`relative z-10 flex flex-col items-center h-screen justify-center space-y-10 text-center px-4 overflow-hidden transition-all duration-1000 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <div className={`relative z-10 flex flex-col items-center h-screen justify-center space-y-10 text-center px-4 overflow-hidden transition-all duration-1000 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ touchAction: 'pan-y pinch-zoom' }}>
         {/* Hero Text */}
         <div className="space-y-6">
           <h1 className="font-bold text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-foreground tracking-tight leading-tight animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
@@ -236,7 +236,7 @@ export default function Home() {
                   onBlur={() => setIsSearchFocused(false)}
                   disabled={isLoading}
                   autoComplete="off"
-                  className="pl-32 pr-20 py-4 text-lg rounded-full h-14 bg-transparent border-0 ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 outline-none focus:outline-none focus-visible:outline-none appearance-none text-foreground placeholder:text-muted-foreground/90 transition-all duration-300 [&::-webkit-search-cancel-button]:hidden"
+                  className="pl-32 pr-24 sm:pr-20 py-4 text-base sm:text-lg rounded-full h-14 bg-transparent border-0 ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 outline-none focus:outline-none focus-visible:outline-none appearance-none text-foreground placeholder:text-muted-foreground/90 transition-all duration-300 [&::-webkit-search-cancel-button]:hidden"
                 />
               </div>
               
@@ -244,18 +244,20 @@ export default function Home() {
               <Button 
                 type="submit"
                 disabled={isLoading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-foreground border border-border/20 rounded-full bg-primary/10 backdrop-blur-sm hover:bg-primary/20 hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-foreground border border-border/20 rounded-full bg-primary/10 backdrop-blur-sm hover:bg-primary/20 hover:scale-105 transition-all duration-200 flex items-center gap-1 sm:gap-2 h-10 px-3 sm:px-4"
                 size="sm"
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Analyzing...</span>
+                    <span className="hidden sm:inline">Analyzing...</span>
+                    <span className="sm:hidden">...</span>
                   </>
                 ) : (
                   <>
                     <Search className="h-4 w-4" />
-                    <span>Scan</span>
+                    <span className="hidden sm:inline">Scan</span>
+                    <span className="sm:hidden">Go</span>
                   </>
                 )}
               </Button>

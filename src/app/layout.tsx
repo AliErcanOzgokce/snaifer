@@ -36,6 +36,7 @@ export default async function RootLayout({
       <body
         className={`${dmSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
+        style={{ touchAction: 'pan-y pinch-zoom' }}
       >
         <ThemeProvider
           attribute="class"

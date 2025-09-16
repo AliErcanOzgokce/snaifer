@@ -9,7 +9,7 @@ interface TradingViewChartProps {
 }
 
 export function TradingViewChart({
-  symbol = "BITSTAMP:ETHUSD",
+  symbol = "BINANCE:BONKUSDT",
   theme = "dark",
   height = "500px"
 }: TradingViewChartProps) {
