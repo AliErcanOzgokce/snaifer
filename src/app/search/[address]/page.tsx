@@ -630,10 +630,10 @@ export default function Component() {
                       <span>Likidite & DEX Aggregator</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="space-y-6">
+                  <CardContent className="p-3 sm:p-6">
+                    <div className="space-y-4 sm:space-y-6">
                       {/* DEX Aggregator Interface */}
-                      <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-2xl p-6">
+                      <div className="bg-glass/50 backdrop-blur-sm border border-border/20 rounded-2xl p-3 sm:p-6">
                         <div className="flex items-center justify-between mb-6">
                           <h4 className="text-lg font-semibold text-foreground">En İyi Fiyat Bulucu</h4>
                           <Badge className="bg-success/10 text-success border-success/20">
@@ -644,7 +644,7 @@ export default function Component() {
                         {/* Swap Interface */}
                         <div className="space-y-4">
                                       {/* From Token */}
-                                      <div className="bg-accent/20 backdrop-blur-sm border border-border/20 rounded-xl p-4">
+                                      <div className="bg-accent/20 backdrop-blur-sm border border-border/20 rounded-xl p-3 sm:p-4">
                                         <div className="flex items-center justify-between mb-2">
                                           <span className="text-sm text-muted-foreground">Satıyorsun</span>
                                           <span className="text-xs text-muted-foreground">Bakiye: {walletBalance.SOL.toFixed(4)} SOL</span>
@@ -687,7 +687,7 @@ export default function Component() {
                           </div>
                           
                           {/* To Token */}
-                          <div className="bg-accent/20 backdrop-blur-sm border border-border/20 rounded-xl p-4">
+                          <div className="bg-accent/20 backdrop-blur-sm border border-border/20 rounded-xl p-3 sm:p-4">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm text-muted-foreground">Alıyorsun</span>
                               <span className="text-xs text-muted-foreground">Bakiye: {walletBalance.BONK.toFixed(0)} BONK</span>
@@ -774,7 +774,7 @@ export default function Component() {
                             { name: "Orca", price: "42,380", slippage: "0.3%", liquidity: "High", volume: "$1.2M", isBest: false },
                             { name: "Serum", price: "42,200", slippage: "0.4%", liquidity: "Low", volume: "$800K", isBest: false }
                           ].map((dex, index) => (
-                            <div key={index} className={`flex items-center justify-between p-3 rounded-lg hover:bg-glass/50 transition-colors ${dex.isBest ? 'bg-success/10 border border-success/20' : 'bg-glass/30'}`}>
+                            <div key={index} className={`flex items-center justify-between p-2 sm:p-3 rounded-lg hover:bg-glass/50 transition-colors ${dex.isBest ? 'bg-success/10 border border-success/20' : 'bg-glass/30'}`}>
                               <div className="flex items-center space-x-3">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${dex.isBest ? 'bg-success/20' : 'bg-accent/50'}`}>
                                   <span className={`text-xs font-bold ${dex.isBest ? 'text-success' : 'text-foreground'}`}>{dex.name[0]}</span>
