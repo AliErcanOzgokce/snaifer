@@ -4,7 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Copy, ExternalLink, Share2, Download, Loader2 } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, Share2, Download, Loader2, Check } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -86,6 +86,9 @@ export default function Component() {
     BONK: 0.0,
     USDC: 0.0
   });
+
+  // Copy animation state
+  const [isCopied, setIsCopied] = useState(false);
 
   // Enhanced API Response Mock Data for Demo
   const apiResponse = {
@@ -388,7 +391,7 @@ export default function Component() {
       <Shell showGradient={true} className="mt-25">
         {/* Header */}
         <ShellHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             {/* Breadcrumb */}
             <div className="flex items-center space-x-1 sm:space-x-2">
               <Link href="/" className="inline-flex items-center gap-1 sm:gap-2 text-muted-foreground hover:text-foreground transition-colors duration-300 group">
@@ -404,14 +407,15 @@ export default function Component() {
             </div>
             
             {/* Actions */}
-            <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="sm" className="hover:bg-accent/50">
-                <Share2 className="w-4 h-4 mr-2" />
-                Paylaş
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <Button variant="ghost" size="sm" className="hover:bg-accent/50 flex-1 sm:flex-none">
+                <Share2 className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Paylaş</span>
               </Button>
-              <Button variant="ghost" size="sm" className="hover:bg-accent/50">
-                <Download className="w-4 h-4 mr-2" />
-                Rapor İndir
+              <Button variant="ghost" size="sm" className="hover:bg-accent/50 flex-1 sm:flex-none">
+                <Download className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Rapor İndir</span>
+                <span className="sm:hidden">İndir</span>
               </Button>
             </div>
           </div>
@@ -461,14 +465,19 @@ export default function Component() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="h-8 w-8 p-0 hover:bg-accent/50"
+                        className={`h-8 w-8 p-0 hover:bg-accent/50 transition-all duration-200 ${isCopied ? 'bg-success/20 text-success' : ''}`}
                         onClick={() => {
                           navigator.clipboard.writeText(tokenAddress);
-                          // Toast notification could be added here
+                          setIsCopied(true);
+                          setTimeout(() => setIsCopied(false), 2000);
                         }}
                       >
-                        <Copy className="w-3 h-3" />
-                      </Button>
+                        {isCopied ? (
+                          <Check className="w-3 h-3 text-success" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                  </Button>
                       <Button 
                         variant="ghost" 
                         size="sm" 
@@ -478,8 +487,8 @@ export default function Component() {
                         }}
                       >
                         <ExternalLink className="w-3 h-3" />
-                      </Button>
-                    </div>
+                  </Button>
+                </div>
               </div>
             </div>
               </div>
@@ -529,32 +538,42 @@ export default function Component() {
 
             {/* Tabs Section */}
             <Tabs defaultValue="security" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 bg-glass/50 backdrop-blur-sm border border-border/20 rounded-xl h-10 md:h-12">
-                <TabsTrigger value="security" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm">
-                  <Shield className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Güvenlik</span>
-                  <span className="sm:hidden">Güven</span>
+              <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 bg-glass/50 backdrop-blur-sm border border-border/20 rounded-xl h-12 md:h-12 gap-1 p-1">
+                <TabsTrigger value="security" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm flex flex-col items-center justify-center py-2">
+                  <Shield className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Güvenlik</span>
                 </TabsTrigger>
-                <TabsTrigger value="liquidity" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm">
-                  <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Likidite</span>
-                  <span className="sm:hidden">Likid</span>
+                <TabsTrigger value="liquidity" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm flex flex-col items-center justify-center py-2">
+                  <TrendingUp className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Likidite</span>
                 </TabsTrigger>
-                <TabsTrigger value="market" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm">
-                  <BarChart3 className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Pazar
+                <TabsTrigger value="market" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm flex flex-col items-center justify-center py-2">
+                  <BarChart3 className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Pazar</span>
                 </TabsTrigger>
-                <TabsTrigger value="community" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm">
-                  <Users className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Topluluk</span>
-                  <span className="sm:hidden">Toplum</span>
+                <TabsTrigger value="community" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm flex flex-col items-center justify-center py-2 hidden md:flex">
+                  <Users className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Topluluk</span>
                 </TabsTrigger>
-                <TabsTrigger value="technical" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm">
-                  <Code className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  <span className="hidden sm:inline">Teknik</span>
-                  <span className="sm:hidden">Tek</span>
+                <TabsTrigger value="technical" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs md:text-sm flex flex-col items-center justify-center py-2 hidden md:flex">
+                  <Code className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Teknik</span>
                 </TabsTrigger>
               </TabsList>
+              
+              {/* Mobile Additional Tabs */}
+              <div className="md:hidden mt-2">
+                <TabsList className="grid w-full grid-cols-2 bg-glass/50 backdrop-blur-sm border border-border/20 rounded-xl h-12 gap-1 p-1">
+                  <TabsTrigger value="community" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs flex flex-col items-center justify-center py-2">
+                    <Users className="w-4 h-4 mb-1" />
+                    <span className="text-xs">Topluluk</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="technical" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg text-xs flex flex-col items-center justify-center py-2">
+                    <Code className="w-4 h-4 mb-1" />
+                    <span className="text-xs">Teknik</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               {/* Security Tab */}
               <TabsContent value="security" className="mt-6">
@@ -794,8 +813,8 @@ export default function Component() {
                       {/* Price Chart */}
                       <div>
                         <h4 className="text-lg font-semibold text-foreground mb-4">Fiyat Grafiği</h4>
-                        <div className="h-96 rounded-lg overflow-hidden bg-accent/10 border border-border/20">
-                          <TradingViewChart symbol="BINANCE:BONKUSDT" />
+                        <div className="h-64 sm:h-80 md:h-96 rounded-lg overflow-hidden bg-accent/10 border border-border/20">
+                          <TradingViewChart symbol="BINANCE:BONKUSDT" height="100%" />
                         </div>
                       </div>
                       
@@ -970,7 +989,7 @@ export default function Component() {
                             <span className="text-sm text-muted-foreground">Genel Topluluk Skoru</span>
                             <span className="text-2xl font-bold text-success">{apiResponse.scores.communityScore}/100</span>
                           </div>
-                          <div className="w-full bg-accent/30 rounded-full h-3 overflow-hidden">
+                          <div className="w-full bg-accent/50 rounded-full h-3 overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-success to-success/80"
                               style={{ width: `${apiResponse.scores.communityScore}%` }}
@@ -1150,7 +1169,7 @@ export default function Component() {
                             <span className="text-sm text-muted-foreground">Teknik Değerlendirme</span>
                             <span className="text-2xl font-bold text-warning">{apiResponse.scores.technicalScore}/100</span>
                           </div>
-                          <div className="w-full bg-accent/30 rounded-full h-3 overflow-hidden">
+                          <div className="w-full bg-accent/50 rounded-full h-3 overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-warning to-warning/80"
                               style={{ width: `${apiResponse.scores.technicalScore}%` }}
@@ -1198,7 +1217,7 @@ export default function Component() {
                           </span>
                         </div>
                       
-                      <div className="w-full h-2 bg-accent/30 rounded-full overflow-hidden mb-3">
+                      <div className="w-full h-2 bg-accent/50 rounded-full overflow-hidden mb-3">
                           <div 
                           className="h-full rounded-full transition-all duration-700" 
                             style={{ 

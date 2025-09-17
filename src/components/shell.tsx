@@ -38,7 +38,7 @@ interface ShellHeaderProps {
 export function ShellHeader({ children, className }: ShellHeaderProps) {
   return (
     <header className={cn(" mb-6 backdrop-blur-md border-b border-border/20", className)}>
-      <div className="container-app py-6 mt-25">
+      <div className="container-app py-4 sm:py-6 mt-25 px-4 sm:px-6">
         {children}
       </div>
     </header>
@@ -52,7 +52,7 @@ interface ShellContentProps {
 
 export function ShellContent({ children, className }: ShellContentProps) {
   return (
-    <main className={cn("py-8", className)}>
+    <main className={cn("py-4 sm:py-8 px-4 sm:px-6", className)}>
       {children}
     </main>
   );
